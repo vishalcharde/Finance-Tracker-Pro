@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker Pro | Personal Wealth Dashboard</title>
+    <!-- Font Awesome for Dashboard Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for Advanced Financial Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Application Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fa-solid fa-wallet brand-icon"></i>
+                <span>Finance Tracker <span class="brand-highlight">Pro</span></span>
+            </div>
+            <div class="nav-actions">
+                <div class="budget-summary-badge" id="navBudgetBadge">
+                    <span class="badge-label">Budget:</span>
+                    <span id="navBudgetAmount">$0.00</span>
+                </div>
+                <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Core App Container -->
+    <main class="app-container">
+        
+        <!-- Summary Cards Grid (Dashboard Metric Layer) -->
+        <section class="metrics-grid" aria-label="Financial Summary Metrics">
+            <!-- Total Balance Card -->
+            <div class="metric-card balance-card">
+                <div class="card-header">
+                    <span class="card-title">Total Balance</span>
+                    <div class="card-icon-container bg-primary-soft">
+                        <i class="fa-solid fa-scale-balanced text-primary"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value" id="totalBalance">$0.00</h2>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta">Net available capital</span>
+                </div>
+            </div>
+
+            <!-- Total Income Card -->
+            <div class="metric-card income-card">
+                <div class="card-header">
+                    <span class="card-title">Total Income</span>
+                    <div class="card-icon-container bg-success-soft">
+                        <i class="fa-solid fa-arrow-trend-up text-success"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value text-success" id="totalIncome">$0.00</h2>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta">Total gross inflows</span>
+                </div>
+            </div>
+
+            <!-- Total Expense Card -->
+            <div class="metric-card expense-card">
+                <div class="card-header">
+                    <span class="card-title">Total Expenses</span>
+                    <div class="card-icon-container bg-danger-soft">
+                        <i class="fa-solid fa-arrow-trend-down text-danger"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value text-danger" id="totalExpense">$0.00</h2>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta">Total gross outflows</span>
+                </div>
+            </div>
+
+            <!-- Savings Card -->
+            <div class="metric-card savings-card">
+                <div class="card-header">
+                    <span class="card-title">Net Savings</span>
+                    <div class="card-icon-container bg-info-soft">
+                        <i class="fa-solid fa-piggy-bank text-info"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value text-info" id="totalSavings">$0.00</h2>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="savingsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta" id="savingsRateLabel">Savings Rate: 0%</span>
+                </div>
+            </div>
+
+            <!-- Budget Remaining Card -->
+            <div class="metric-card budget-status-card">
+                <div class="card-header">
+                    <span class="card-title">Budget Remaining</span>
+                    <div class="card-icon-container bg-warning-soft">
+                        <i class="fa-solid fa-chart-pie text-warning"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value" id="budgetRemaining">$0.00</h2>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="budgetProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta" id="budgitUsageLabel">0% of target spent</span>
+                </div>
+            </div>
+
+            <!-- Today's Spending Card -->
+            <div class="metric-card today-card">
+                <div class="card-header">
+                    <span class="card-title">Today's Spending</span>
+                    <div class="card-icon-container bg-purple-soft">
+                        <i class="fa-solid fa-calendar-day text-purple"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="metric-value" id="todaySpending">$0.00</h2>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-meta">Transactions logged today</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Budget Configuration & Data Management Section -->
+        <section class="management-row" aria-label="Configuration Panels">
+            <!-- Budget Planner Configuration Panel -->
+            <div class="glass-panel budget-planner-panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-sliders icon-margin"></i>Budget Planner</h3>
+                </div>
+                <form id="budgetForm" class="inline-form" novalidate>
+                    <div class="form-group">
+                        <label for="monthlyBudgetInput">Set Monthly Cap ($)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-dollar-sign input-icon"></i>
+                            <input type="number" id="monthlyBudgetInput" min="0" step="0.01" placeholder="Enter monthly budget limit" required />
+                        </div>
+                        <div class="error-message" id="budgetInputError">Please enter a valid positive budget amount.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-check icon-margin"></i>Update Limit
+                    </button>
+                </form>
+                <div id="budgetAlertBox" class="alert-banner hidden">
+                    <i class="fa-solid fa-triangle-exclamation alert-icon"></i>
+                    <span id="budgetAlertMessage">Warning: Budget threshold breached!</span>
+                </div>
+            </div>
+
+            <!-- CSV Import / Export Portfolio Management Panel -->
+            <div class="glass-panel data-portfolio-panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-database icon-margin"></i>Data Portability</h3>
+                </div>
+                <div class="data-actions-container">
+                    <div class="export-box">
+                        <p class="data-description">Backup asset logs to a production-ready clean CSV architecture document.</p>
+                        <button id="exportCsvBtn" class="btn btn-secondary">
+                            <i class="fa-solid fa-download icon-margin"></i>Export Ledger Data (CSV)
+                        </button>
+                    </div>
+                    <div class="import-box">
+                        <p class="data-description">Restore transaction structures directly via standard format schema documents.</p>
+                        <label for="importCsvFile" class="btn btn-outline btn-block file-upload-label">
+                            <i class="fa-solid fa-upload icon-margin"></i>Choose File & Import CSV
+                        </label>
+                        <input type="file" id="importCsvFile" accept=".csv" class="hidden-file-input" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Visual Layer Grid -->
+        <section class="analytics-grid" aria-label="Visual Analytics Layout">
+            <!-- Distribution Allocation Canvas Area -->
+            <div class="glass-panel chart-container-panel large-chart">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-chart-line icon-margin"></i>Net Cash Flow Trends</h3>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="lineChartCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="analytics-sub-grid">
+                <!-- Categorical Matrix Area (Expense Share) -->
+                <div class="glass-panel chart-container-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-chart-pie icon-margin"></i>Expense Allocation</h3>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="pieChartCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Contrast Volume Structure (Inflows vs Outflows) -->
+                <div class="glass-panel chart-container-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-chart-column icon-margin"></i>Inflow vs Outflow Contrast</h3>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="barChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Transaction Interface and Log Framework -->
+        <section class="ledger-section" aria-label="Transaction Operations System">
+            <div class="ledger-layout">
+                
+                <!-- Left Column: Add Transaction Interactive Console Panel -->
+                <div class="glass-panel input-console-panel">
+                    <div class="panel-header">
+                        <h3 id="formPanelTitle"><i class="fa-solid fa-circle-plus icon-margin"></i>Add Transaction</h3>
+                    </div>
+                    <form id="transactionForm" novalidate>
+                        <!-- Mode Selector Switch Toggle Type -->
+                        <div class="form-group">
+                            <label>Transaction Classification</label>
+                            <div class="transaction-type-toggle">
+                                <input type="radio" id="typeExpense" name="txType" value="expense" checked />
+                                <label for="typeExpense" class="toggle-label label-expense">
+                                    <i class="fa-solid fa-arrow-trend-down icon-margin"></i>Expense
+                                </label>
+
+                                <input type="radio" id="typeIncome" name="txType" value="income" />
+                                <label for="typeIncome" class="toggle-label label-income">
+                                    <i class="fa-solid fa-arrow-trend-up icon-margin"></i>Income
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Categorical Allocation Domain Selector Dropdown Selection Box -->
+                        <div class="form-group">
+                            <label for="txCategory">Category Allocation Matrix</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-tags input-icon"></i>
+                                <select id="txCategory" required>
+                                    <!-- Dynamic Population Scope / Default Fallback Structures -->
+                                    <option value="" disabled selected>Select contextual matrix asset</option>
+                                    <option value="Salary">Salary (Inflow Capital)</option>
+                                    <option value="Investments">Investments Portfolio Inflow</option>
+                                    <option value="Freelance">Freelance/Consulting Revenue</option>
+                                    <option value="Food">Food & Dining Outlays</option>
+                                    <option value="Housing">Housing & Fixed Rent Devolution</option>
+                                    <option value="Utilities">Utilities & Infrastructure Services</option>
+                                    <option value="Entertainment">Entertainment & Leisure Outlays</option>
+                                    <option value="Transportation">Transportation & Commute Logistics</option>
+                                    <option value="Healthcare">Healthcare & Insurance Coverage</option>
+                                    <option value="Other">Other Operational Adjustments</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="txCategoryError">Please select a descriptive ledger domain asset category.</div>
+                        </div>
+
+                        <!-- Quantity Matrix Amount Variable Form Entry Field Box -->
+                        <div class="form-group">
+                            <label for="txAmount">Financial Value Amount ($)</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-hand-holding-dollar input-icon"></i>
+                                <input type="number" id="txAmount" min="0.01" step="0.01" placeholder="0.00" required />
+                            </div>
+                            <div class="error-message" id="txAmountError">Please specify a transaction quantity value strictly greater than 0.</div>
+                        </div>
+
+                        <!-- Temporal Configuration Node Calendar Input Element Box -->
+                        <div class="form-group">
+                            <label for="txDate">Execution Date Timestamp</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-calendar-days input-icon"></i>
+                                <input type="date" id="txDate" required />
+                            </div>
+                            <div class="error-message" id="txDateError">Please define a non-null operational baseline historical execution date.</div>
+                        </div>
+
+                        <!-- Textual Identification Metadata Description String TextArea Control Container -->
+                        <div class="form-group">
+                            <label for="txDescription">Description Metadata Context</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-pen-nib input-icon"></i>
+                                <textarea id="txDescription" rows="3" placeholder="Specify vendor, rationale, or line item criteria details..." required></textarea>
+                            </div>
+                            <div class="error-message" id="txDescriptionError">Please register a valid alphanumeric tracking description parameter text string.</div>
+                        </div>
+
+                        <!-- Action Controls Button Dynamic Interface Layer Layout -->
+                        <div class="form-actions-stack">
+                            <button type="submit" id="submitFormBtn" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-cloud-arrow-up icon-margin"></i>Commit Transaction Asset
+                            </button>
+                            <button type="button" id="cancelEditBtn" class="btn btn-outline btn-block hidden">
+                                <i class="fa-solid fa-xmark icon-margin"></i>Abort Revision State
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Filtering Matrix & Dynamic Records Table Panel -->
+                <div class="glass-panel ledger-display-panel">
+                    <div class="panel-header panel-header-space">
+                        <h3><i class="fa-solid fa-list-check icon-margin"></i>Audit Registry Ledger</h3>
+                        <span class="counter-badge" id="ledgerCountBadge">0 Records</span>
+                    </div>
+
+                    <!-- Search, Refinement Filters & Ordering System Toolbar Interface Area Container -->
+                    <div class="filter-toolbar-matrix">
+                        <!-- Linear String Target Term Content Search Text Input Element Controls Container Block -->
+                        <div class="toolbar-search-box">
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                                <input type="text" id="searchFilterInput" placeholder="Filter descriptions or vendors..." />
+                            </div>
+                        </div>
+
+                        <!-- Filter Options Dropdown Layer Structural Component Arrays Block Container -->
+                        <div class="toolbar-dropdowns-row">
+                            <!-- Category Filter Node Switch Select Segment -->
+                            <div class="toolbar-select-element">
+                                <select id="categoryFilterDropdown">
+                                    <option value="ALL">All Categories</option>
+                                    <option value="Salary">Salary</option>
+                                    <option value="Investments">Investments</option>
+                                    <option value="Freelance">Freelance</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Housing">Housing</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Classification Core Type Filtering Context Select Parameter Box Dropdown Element -->
+                            <div class="toolbar-select-element">
+                                <select id="typeFilterDropdown">
+                                    <option value="ALL">All Flow Modes</option>
+                                    <option value="income">Inflow Only (Income)</option>
+                                    <option value="expense">Outflow Only (Expense)</option>
+                                </select>
+                            </div>
+
+                            <!-- Sorting Target Data Paradigm Criteria Ordering Node Direction Select Control Configuration Box Layer -->
+                            <div class="toolbar-select-element">
+                                <select id="sortConfigDropdown">
+                                    <option value="date_desc">Date: Newest to Oldest</option>
+                                    <option value="date_asc">Date: Oldest to Newest</option>
+                                    <option value="amount_desc">Value: High to Low</option>
+                                    <option value="amount_asc">Value: Low to High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Row: Amount Metric Threshold Boundaries & Temporal Calendars Alignment Layer Container Block Panel Grid -->
+                        <div class="toolbar-ranges-grid">
+                            <div class="range-group">
+                                <span class="range-group-label">Value Bound Constraint Matrix ($)</span>
+                                <div class="range-inputs">
+                                    <input type="number" id="amountMinInput" min="0" step="0.01" placeholder="Min" />
+                                    <span class="range-delimiter">to</span>
+                                    <input type="number" id="amountMaxInput" min="0" step="0.01" placeholder="Max" />
+                                </div>
+                            </div>
+                            <div class="range-group">
+                                <span class="range-group-label">Temporal Window Threshold Framework Boundaries</span>
+                                <div class="range-inputs">
+                                    <input type="date" id="dateStartInput" />
+                                    <span class="range-delimiter">to</span>
+                                    <input type="date" id="dateEndInput" />
+                                </div>
+                            </div>
+                            <div class="clear-filters-cell">
+                                <button type="button" id="resetFiltersBtn" class="btn btn-outline btn-small btn-block">
+                                    <i class="fa-solid fa-filter-circle-xmark icon-margin"></i>Reset Constraints
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Ledger Structural Table Grid Component Canvas Container Wrapper Block -->
+                    <div class="table-scroll-wrapper">
+                        <table class="ledger-data-table" id="ledgerTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%;">Classification</th>
+                                    <th style="width: 15%;">Temporal Date</th>
+                                    <th style="width: 20%;">Categorical Domain</th>
+                                    <th style="width: 33%;">Description / Metadata Node Reference Context</th>
+                                    <th style="width: 12%; text-align: right;">Quantum Value</th>
+                                    <th style="width: 8%; text-align: center;">Controls</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody">
+                                <!-- Dynamic Render Target Injection Matrix Point via Script Engine Execution -->
+                            </tbody>
+                        </table>
+                        <!-- Informational Fallback Empty State Container Box Placeholder Framework Screen Node -->
+                        <div id="emptyStatePlaceholder" class="empty-state-view hidden">
+                            <i class="fa-solid fa-folder-open empty-state-icon"></i>
+                            <h4>No ledger assets matched target query criteria</h4>
+                            <p>Adjust configured pipeline threshold query values, modify input search strings, or execute new asset inputs to populate rows.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Application Confirmation Modal Infrastructure -->
+    <div id="confirmationModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-box glass-panel animate-bounce">
+            <div class="modal-header text-danger">
+                <i class="fa-solid fa-circle-exclamation modal-icon"></i>
+                <h4 id="modalTitle">Confirm Destructive Operation</h4>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Are you explicitly certain you wish to purge this transaction item record matrix node from local secure persistence? This operation cannot be reversed.</p>
+            </div>
+            <div class="modal-footer-actions">
+                <button id="modalCancelBtn" class="btn btn-outline">Abort Cancellation</button>
+                <button id="modalConfirmBtn" class="btn btn-danger">Confirm Purge Deletion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Application Operations Engine Script Reference -->
+    <script src="script.js"></script>
+</body>
+</html>
